@@ -132,14 +132,15 @@ extension YPSelectionsGalleryVC: UICollectionViewDelegate {
                 }
                 
                 func showCropVC(photo: YPMediaPhoto, completion: @escaping (_ aphoto: YPMediaPhoto) -> Void) {
-                    if case let YPCropType.rectangle(ratio) = YPConfig.showsCrop {
-                        let cropVC = YPCropVC(image: photo.originalImage, ratio: ratio)
+                    switch YPConfig.showsCrop {
+                    case .rectangle(_), .circle:
+                        let cropVC = YPCropVC(image: photo.originalImage)
                         cropVC.didFinishCropping = { croppedImage in
                             photo.modifiedImage = croppedImage
                             completion(photo)
                         }
                         self.show(cropVC, sender: self)
-                    } else {
+                    case .none:
                         completion(photo)
                     }
                 }

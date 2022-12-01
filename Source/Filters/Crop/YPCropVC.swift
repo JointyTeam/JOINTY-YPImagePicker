@@ -34,13 +34,6 @@ class YPCropVC: UIViewController {
         self.title = YPConfig.wordings.crop
     }
     
-    required init(image: UIImage, ratio: Double) {
-        v = YPCropView(image: image, ratio: ratio)
-        originalImage = image
-        super.init(nibName: nil, bundle: nil)
-        self.title = YPConfig.wordings.crop
-    }
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

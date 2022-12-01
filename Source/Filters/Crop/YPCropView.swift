@@ -50,17 +50,6 @@ final class YPCropView: UIView {
         grid.isCircle = isCircle
         grid.isHidden = !YPConfig.showsCropGridOverlay
     }
-    
-    convenience init(image: UIImage, ratio: Double) {
-        self.init(frame: .zero)
-        setupViewHierarchy()
-        setupLayout(with: image, ratio: ratio)
-        applyStyle()
-        imageView.image = image
-        containerView.clipsToBounds = true
-        grid.isCircle = isCircle
-        grid.isHidden = !YPConfig.showsCropGridOverlay
-    }
         
     private func setupViewHierarchy() {
         
