@@ -75,13 +75,17 @@ public class YPCropVC: UIViewController {
         v.imageView.addGestureRecognizer(panGR)
     }
     
-    @objc
-    func cancel() {
+    func exit() {
         if navigationController?.viewControllers.count ?? 1 == 1 {
             dismiss(animated: true, completion: nil)
             return
         }
         navigationController?.popViewController(animated: true)
+    }
+    
+    @objc
+    func cancel() {
+        exit()
     }
     
     @objc
@@ -103,9 +107,7 @@ public class YPCropVC: UIViewController {
             let imageRef = cgImage.cropping(to: scaledCropRect) {
             let croppedImage = UIImage(cgImage: imageRef)
             didFinishCropping?(croppedImage)
-            if YPConfig.library.maxNumberOfItems > 1 {
-                navigationController?.popViewController(animated: true)
-            }
+            exit()
         }
     }
 }
