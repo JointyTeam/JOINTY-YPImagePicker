@@ -42,7 +42,7 @@ public class YPSelectionsGalleryVC: UIViewController, YPSelectionsGalleryCellDel
         // Setup navigation bar
         navigationItem.title = YPConfig.library.selectionsGalleryTitle
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.done,
-                                                            style: .plain,
+                                                            style: .done,
                                                             target: self,
                                                             action: #selector(done))
         navigationItem.rightBarButtonItem?.tintColor = YPConfig.colors.tintColor
