@@ -93,14 +93,14 @@ extension YPSelectionsGalleryVC: UICollectionViewDataSource {
         let item = items[indexPath.row]
         switch item {
         case .photo(let photo):
-            cell.imageView.image = photo.image
+            cell.setImage(photo.image)
             var showCrop = false
             if case YPCropType.rectangle(_) = YPConfig.showsCrop {
                 showCrop = true
             }
             cell.setEditable(YPConfig.showsPhotoFilters || showCrop)
         case .video(let video):
-            cell.imageView.image = video.thumbnail
+            cell.setImage(video.thumbnail)
             cell.setEditable(YPConfig.showsVideoTrimmer)
         }
         cell.removeButton.isHidden = YPConfig.gallery.hidesRemoveButton
@@ -179,5 +179,18 @@ extension YPSelectionsGalleryVC: UICollectionViewDelegate {
             ? UIScrollView.DecelerationRate.fast
             : UIScrollView.DecelerationRate.normal
         lastContentOffsetX = scrollView.contentOffset.x
+    }
+}
+
+extension YPSelectionsGalleryVC: UICollectionViewDelegateFlowLayout {
+    public func collectionView(_ collectionView: UICollectionView,
+                               layout collectionViewLayout: UICollectionViewLayout,
+                               sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let sideMargin: CGFloat = 24
+        let overlapppingNextPhoto: CGFloat = 37
+        let screenWidth = YPImagePickerConfiguration.screenWidth
+        let width = screenWidth - (sideMargin + overlapppingNextPhoto)
+        let height = collectionView.bounds.height
+        return CGSize(width: width, height: height)
     }
 }

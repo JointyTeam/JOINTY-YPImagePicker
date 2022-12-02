@@ -21,29 +21,17 @@ class YPSelectionsGalleryView: UIView {
         )
         
         // Layout collectionView
-        //collectionView.heightEqualsWidth()
-        if #available(iOS 11.0, *) {
-            collectionView.Right == safeAreaLayoutGuide.Right
-            collectionView.Left == safeAreaLayoutGuide.Left
-            collectionView.Top == safeAreaLayoutGuide.Top
-            collectionView.Bottom == safeAreaLayoutGuide.Bottom
-        } else {
-            collectionView.heightEqualsWidth()
-            |collectionView|
-        }
+        collectionView.Right == safeAreaLayoutGuide.Right
+        collectionView.Left == safeAreaLayoutGuide.Left
+        collectionView.Top == safeAreaLayoutGuide.Top
+        collectionView.Bottom == safeAreaLayoutGuide.Bottom
+
         collectionView.CenterY == CenterY - 30
         
         // Apply style
         backgroundColor = YPConfig.colors.selectionsBackgroundColor
         collectionView.backgroundColor = .clear
-        collectionView.showsHorizontalScrollIndicator = false
-        
-        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            var itemSize = flowLayout.itemSize
-            itemSize.height = safeAreaLayoutGuide.owningView?.frame.height ?? itemSize.height
-            flowLayout.itemSize = itemSize
-        }
-
+        collectionView.showsHorizontalScrollIndicator = false        
     }
 }
 

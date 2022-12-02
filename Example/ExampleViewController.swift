@@ -135,16 +135,16 @@ class ExampleViewController: UIViewController {
         config.video.libraryTimeLimit = 500.0
 
         /* Adds a Crop step in the photo taking process, after filters. Defaults to .none */
-        config.showsCrop = .rectangle(ratio: (16/9))
+        config.showsCrop = .rectangle(ratio: 1)
 
         /* Changes the crop mask color */
         // config.colors.cropOverlayColor = .green
 
         /* Defines the overlay view for the camera. Defaults to UIView(). */
-        // let overlayView = UIView()
-        // overlayView.backgroundColor = .red
-        // overlayView.alpha = 0.3
-        // config.overlayView = overlayView
+        let overlayView = UIView()
+        overlayView.backgroundColor = .red
+        overlayView.alpha = 0.3
+        config.overlayView = overlayView
 
         /* Customize wordings */
         config.wordings.libraryTitle = "Gallery"
@@ -157,8 +157,10 @@ class ExampleViewController: UIViewController {
 
         config.maxCameraZoomFactor = 2.0
 
+        config.library.defaultMultipleSelection = true
         config.library.maxNumberOfItems = 5
         config.gallery.hidesRemoveButton = false
+        config.showsPhotoFilters = false
 
         /* Disable scroll to change between mode */
         // config.isScrollToChangeModesEnabled = false

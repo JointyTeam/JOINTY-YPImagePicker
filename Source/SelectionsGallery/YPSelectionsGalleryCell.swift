@@ -16,7 +16,7 @@ public protocol YPSelectionsGalleryCellDelegate: AnyObject {
 public class YPSelectionsGalleryCell: UICollectionViewCell {
     
     weak var delegate: YPSelectionsGalleryCellDelegate?
-    let imageView = UIImageView()
+    private let imageView = UIImageView()
     let editIcon = UIView()
     let editSquare = UIView()
     let removeButton = UIButton()
@@ -24,14 +24,20 @@ public class YPSelectionsGalleryCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
     
-        subviews(
-            imageView,
+        subviews(imageView)
+        imageView.subviews(
             editIcon,
             editSquare,
             removeButton
         )
         
-        imageView.fillContainer()
+        imageView.isUserInteractionEnabled = true
+        
+        imageView.CenterY == self.CenterY
+        imageView.Left == self.Left
+        imageView.Right == self.Right
+        // height will be set on setImage
+        
         editIcon.size(32).left(12).bottom(12)
         editSquare.size(16)
         editSquare.CenterY == editIcon.CenterY
@@ -39,11 +45,6 @@ public class YPSelectionsGalleryCell: UICollectionViewCell {
         
         removeButton.top(12).trailing(12)
         
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOpacity = 0.2
-        layer.shadowOffset = CGSize(width: 4, height: 7)
-        layer.shadowRadius = 5
-        layer.backgroundColor = UIColor.clear.cgColor
         imageView.style { i in
             i.clipsToBounds = true
             i.contentMode = .scaleAspectFill
@@ -70,6 +71,16 @@ public class YPSelectionsGalleryCell: UICollectionViewCell {
         self.editSquare.isHidden = !editable
     }
     
+    func setImage(_ image: UIImage?) {
+        var ratio: CGFloat = 1
+        if let size = image?.size {
+            ratio = size.width/size.height
+        }
+        let imageHeight = self.bounds.width/ratio
+        imageView.Height == imageHeight
+        imageView.image = image
+    }
+
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -83,8 +94,8 @@ public class YPSelectionsGalleryCell: UICollectionViewCell {
                            options: .curveEaseInOut,
                            animations: {
                             if self.isHighlighted {
-                                self.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-                                self.alpha = 0.8
+                                self.transform = CGAffineTransform(scaleX: 0.985, y: 0.985)
+                                self.alpha = 0.9
                             } else {
                                 self.transform = .identity
                                 self.alpha = 1
