@@ -85,7 +85,7 @@ open class YPImagePicker: UINavigationController {
             self?.view.layer.add(transition, forKey: nil)
             
             // Multiple items flow
-            if items.count > 1 {
+            //if items.count > 1 {
                 if YPConfig.library.skipSelectionsGallery {
                     self?.didSelect(items: items)
                     return
@@ -96,7 +96,8 @@ open class YPImagePicker: UINavigationController {
                     self?.pushViewController(selectionsGalleryVC, animated: true)
                     return
                 }
-            }
+            //}
+            
             
             // One item flow
             let item = items.first!
