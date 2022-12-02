@@ -137,6 +137,7 @@ extension YPSelectionsGalleryVC: UICollectionViewDelegate {
                         let cropVC = YPCropVC(image: photo.originalImage)
                         cropVC.didFinishCropping = { croppedImage in
                             photo.modifiedImage = croppedImage
+                            collectionView.reloadItems(at: [indexPath])
                             completion(photo)
                         }
                         self.show(cropVC, sender: self)
