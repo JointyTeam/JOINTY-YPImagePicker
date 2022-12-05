@@ -51,6 +51,8 @@ public class YPSelectionsGalleryCell: UICollectionViewCell {
         editSquare.CenterX == editIcon.CenterX
         
         removeButton.top(12).trailing(12)
+        
+        reloadButton.size(32)
         reloadButton.bottom(12).trailing(12)
         reloadButton.isHidden = true
         
