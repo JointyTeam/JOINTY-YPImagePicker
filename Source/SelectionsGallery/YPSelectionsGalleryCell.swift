@@ -43,6 +43,7 @@ public class YPSelectionsGalleryCell: UICollectionViewCell {
         imageView.Right == self.Right
         
         editImageView.left(12).bottom(12)
+        editImageView.size(32)
         
         editIcon.size(32).left(12).bottom(12)
         editSquare.size(16)
