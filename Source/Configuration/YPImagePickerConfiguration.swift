@@ -205,6 +205,9 @@ public struct YPConfigLibrary {
 
     /// Pre-selects the current item on setting multiple selection
     public var preSelectItemOnMultipleSelection = true
+    
+    /// Hides or shows multiple selection button
+    public var changeMultipleSelectionEnabled = true
 
     /// Anything superior than 1 will enable the multiple selection feature.
     public var maxNumberOfItems = 1
@@ -230,6 +233,9 @@ public struct YPConfigLibrary {
     
     /// Set the overlay type shown on top of the selected library item
     public var itemOverlayType: YPItemOverlayType = .grid
+    
+    /// Set the tick instead of number on selected cells
+    public var multipleSelectionIndicatorAsTick: Bool = true
 }
 
 /// Encapsulates video specific settings.

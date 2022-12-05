@@ -24,12 +24,15 @@ class YPMultipleSelectionIndicator: UIView {
             circle,
             label
         )
-        
+                
         circle.fillContainer()
         circle.size(size)
         label.fillContainer()
         
         circle.layer.cornerRadius = size / 2.0
+        circle.layer.borderColor = UIColor.white.cgColor
+        circle.layer.borderWidth = 1
+        
         label.textAlignment = .center
         label.textColor = .white
         label.font = YPConfig.fonts.multipleSelectionIndicatorFont
@@ -41,13 +44,9 @@ class YPMultipleSelectionIndicator: UIView {
         label.isHidden = (number == nil)
         if let number = number {
             circle.backgroundColor = selectionColor
-            circle.layer.borderColor = UIColor.clear.cgColor
-            circle.layer.borderWidth = 0
-            label.text = "\(number)"
+            label.text = YPConfig.library.multipleSelectionIndicatorAsTick ? "✓" : "\(number)"
         } else {
             circle.backgroundColor = UIColor.white.withAlphaComponent(0.3)
-            circle.layer.borderColor = UIColor.white.cgColor
-            circle.layer.borderWidth = 1
             label.text = ""
         }
     }

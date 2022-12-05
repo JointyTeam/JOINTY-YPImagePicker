@@ -157,6 +157,7 @@ class ExampleViewController: UIViewController {
 
         config.maxCameraZoomFactor = 2.0
 
+        config.library.changeMultipleSelectionEnabled = false
         config.library.defaultMultipleSelection = true
         config.library.maxNumberOfItems = 5
         config.gallery.hidesRemoveButton = false

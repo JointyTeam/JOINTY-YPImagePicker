@@ -75,6 +75,16 @@ public class YPSelectionsGalleryVC: UIViewController, YPSelectionsGalleryCellDel
             }, completion: { _ in })
         }
     }
+    
+    public func selectionsGalleryCellDidTapReload(cell: YPSelectionsGalleryCell) {
+        if let indexPath = v.collectionView.indexPath(for: cell) {
+            let item = items[indexPath.row]
+            if case let .photo(p) = item {
+                p.modifiedImage = nil
+            }
+            v.collectionView.reloadItems(at: [indexPath])
+        }
+    }
 }
 
 // MARK: - Collection View
@@ -99,6 +109,7 @@ extension YPSelectionsGalleryVC: UICollectionViewDataSource {
                 showCrop = true
             }
             cell.setEditable(YPConfig.showsPhotoFilters || showCrop)
+            cell.setResetable(photo.image == photo.modifiedImage)
         case .video(let video):
             cell.setImage(video.thumbnail)
             cell.setEditable(YPConfig.showsVideoTrimmer)

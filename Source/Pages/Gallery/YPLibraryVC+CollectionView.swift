@@ -179,13 +179,21 @@ extension YPLibraryVC: UICollectionViewDelegate {
             
         if isMultipleSelectionEnabled {
             let cellIsInTheSelectionPool = isInSelectionPool(indexPath: indexPath)
-            let cellIsCurrentlySelected = previouslySelectedIndexPath.row == currentlySelectedIndex
+            //let cellIsCurrentlySelected = previouslySelectedIndexPath.row == currentlySelectedIndex
             if cellIsInTheSelectionPool {
-                if cellIsCurrentlySelected {
+                //if cellIsCurrentlySelected {
                     deselect(indexPath: indexPath)
-                }
+                //}
             } else if isLimitExceeded == false {
                 addToSelection(indexPath: indexPath)
+            } else {
+                UIView.animate(withDuration: 0.65, delay: 0.0, usingSpringWithDamping: 0.65, initialSpringVelocity: 0.65) {
+                    self.v.maxNumberWarningLabel.transform = .init(scaleX: 1.2, y: 1.2)
+                } completion: { _ in
+                    UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseIn) {
+                        self.v.maxNumberWarningLabel.transform = .identity
+                    }
+                }
             }
             collectionView.reloadItems(at: [indexPath])
             collectionView.reloadItems(at: [previouslySelectedIndexPath])

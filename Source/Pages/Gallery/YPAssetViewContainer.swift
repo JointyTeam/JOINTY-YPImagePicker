@@ -21,6 +21,7 @@ final class YPAssetViewContainer: UIView {
     public let multipleSelectionButton: UIButton = {
         let v = UIButton()
         v.setImage(YPConfig.icons.multipleSelectionOffIcon, for: .normal)
+        v.alpha = YPConfig.library.changeMultipleSelectionEnabled ? 1 : 0
         return v
     }()
     public var onlySquare = YPConfig.library.onlySquare
