@@ -60,6 +60,8 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         
         if let preselectedItems = YPConfig.library.preselectedItems,
            !preselectedItems.isEmpty {
+            selectedItems = getPreselectedItems()
+            /*
             selectedItems = preselectedItems.compactMap { item -> YPLibrarySelection? in
                 var itemAsset: PHAsset?
                 switch item {
@@ -74,7 +76,7 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                 
                 // The negative index will be corrected in the collectionView:cellForItemAt:
                 return YPLibrarySelection(index: -1, assetIdentifier: asset.localIdentifier)
-            }
+            }*/
             v.assetViewContainer.setMultipleSelectionMode(on: isMultipleSelectionEnabled)
             v.collectionView.reloadData()
         }
@@ -96,6 +98,26 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
             selectedItems.removeAll()
         }
         refreshMediaRequest()
+    }
+    
+    func getPreselectedItems() -> [YPLibrarySelection] {
+        let selectedItems = YPConfig.library.preselectedItems?.compactMap { item -> YPLibrarySelection? in
+            var itemAsset: PHAsset?
+            switch item {
+            case .photo(let photo):
+                itemAsset = photo.asset
+            case .video(let video):
+                itemAsset = video.asset
+            }
+            guard let asset = itemAsset else {
+                return nil
+            }
+            
+            // The negative index will be corrected in the collectionView:cellForItemAt:
+            return YPLibrarySelection(index: -1, assetIdentifier: asset.localIdentifier)
+        }
+        
+        return selectedItems ?? []
     }
 
     // MARK: - View Lifecycle
@@ -237,20 +259,49 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
             mediaManager.fetchResult = PHAsset.fetchAssets(with: options)
         }
         
-        if mediaManager.hasResultItems,
-        let firstAsset = mediaManager.getAsset(at: 0) {
-            changeAsset(firstAsset)
-            v.collectionView.reloadData()
-            v.collectionView.selectItem(at: IndexPath(row: 0, section: 0),
-                                        animated: false,
-                                        scrollPosition: UICollectionView.ScrollPosition())
-            if !isMultipleSelectionEnabled && YPConfig.library.preSelectItemOnMultipleSelection {
+        
+        if mediaManager.hasResultItems {
+            var assets: [PHAsset] = []
+        
+            var selectedIds = selectedItems.compactMap({$0.assetIdentifier})
+            if selectedIds.isEmpty {
+                selectedIds = getPreselectedItems().compactMap({$0.assetIdentifier})
+            }
+            mediaManager.fetchResult?.enumerateObjects({ asset, index, stop in
+                if selectedIds.contains(asset.localIdentifier) {
+                    assets.append(asset)
+                }
+            })
+            
+            if let firstAsset = assets.first {
+                changeAsset(firstAsset)
+                v.collectionView.reloadData()
+                if let index = mediaManager.fetchResult?.index(of: firstAsset) {
+                    v.collectionView.selectItem(at: IndexPath(row: index, section: 0),
+                                                animated: false,
+                                                scrollPosition: UICollectionView.ScrollPosition())
+                    v.collectionView.scrollToItem(at: IndexPath(row: index, section: 0), at: UICollectionView.ScrollPosition(), animated: false)
+                    return
+                }
+            }
+            else if selectedItems.isEmpty, let firstAsset = mediaManager.getAsset(at: 0),
+                    !isMultipleSelectionEnabled && YPConfig.library.preSelectItemOnMultipleSelection {
+                changeAsset(firstAsset)
+                v.collectionView.reloadData()
+                v.collectionView.selectItem(at: IndexPath(row: 0, section: 0),
+                                            animated: false,
+                                            scrollPosition: UICollectionView.ScrollPosition())
                 addToSelection(indexPath: IndexPath(row: 0, section: 0))
+            }
+            else {
+                changeAsset(nil)
+                v.collectionView.reloadData()
+                self.v.assetZoomableView.clearAsset()
             }
         } else {
             delegate?.libraryViewHaveNoItems()
         }
-
+        
         scrollToTop()
     }
     
@@ -279,11 +330,39 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         }
     }
     
+    lazy var infoLabel: UILabel = {
+        
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = YPImagePickerConfiguration.shared.fonts.libaryWarningFont
+        label.textColor = .ypLabel
+        label.numberOfLines = 0
+        label.text = "Selecciona una imagen"
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        self.view.insertSubview(label, aboveSubview: self.v)
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: self.v.assetZoomableView.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: self.v.assetZoomableView.centerYAnchor),
+            label.leadingAnchor.constraint(greaterThanOrEqualTo: self.v.assetZoomableView.leadingAnchor, constant: 16),
+            label.trailingAnchor.constraint(lessThanOrEqualTo: self.v.assetZoomableView.trailingAnchor, constant: -16),
+            label.topAnchor.constraint(greaterThanOrEqualTo: self.v.assetZoomableView.topAnchor, constant: 16),
+            label.bottomAnchor.constraint(lessThanOrEqualTo: self.v.assetZoomableView.bottomAnchor, constant: -16),
+        ])
+        
+        return label
+    }()
+    
     func changeAsset(_ asset: PHAsset?) {
         guard let asset = asset else {
             print("No asset to change.")
+            self.infoLabel.isHidden = false
+            self.v.hideLoader()
+            self.delegate?.libraryViewFinishedLoading()
             return
         }
+        
+        self.infoLabel.isHidden = true
 
         delegate?.libraryViewStartedLoadingImage()
         

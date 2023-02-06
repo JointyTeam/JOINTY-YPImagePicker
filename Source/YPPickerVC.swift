@@ -121,6 +121,10 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         
         YPHelper.changeBackButtonIcon(self)
         YPHelper.changeBackButtonTitle(self)
+        
+        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
+            self.retriggerPermissionCheck(for: self.currentController)
+        }
     }
     
     open override func viewWillAppear(_ animated: Bool) {
@@ -164,6 +168,24 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         // Set new mode
         mode = modeFor(vc: vc)
         
+        retriggerPermissionCheck(for: vc)
+        
+//        // Re-trigger permission check
+//        if let vc = vc as? YPLibraryVC {
+//            vc.doAfterLibraryPermissionCheck { [weak vc] in
+//                vc?.initialize()
+//            }
+//        } else if let cameraVC = vc as? YPCameraVC {
+//            cameraVC.start()
+//        } else if let videoVC = vc as? YPVideoCaptureVC {
+//            videoVC.start()
+//        }
+
+        updateUI()
+    }
+    
+    func retriggerPermissionCheck(for vc: UIViewController) {
+        
         // Re-trigger permission check
         if let vc = vc as? YPLibraryVC {
             vc.doAfterLibraryPermissionCheck { [weak vc] in
@@ -174,8 +196,6 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         } else if let videoVC = vc as? YPVideoCaptureVC {
             videoVC.start()
         }
-
-        updateUI()
     }
     
     func stopCurrentCamera() {

@@ -64,13 +64,19 @@ extension YPLibraryVC {
             // Refresh the numbers
             let selectedIndexPaths = selectedItems.map { IndexPath(row: $0.index, section: 0) }
             v.collectionView.reloadItems(at: selectedIndexPaths)
-			
-            // Replace the current selected image with the previously selected one
-            if let previouslySelectedIndexPath = selectedIndexPaths.last {
-                v.collectionView.deselectItem(at: indexPath, animated: false)
-                v.collectionView.selectItem(at: previouslySelectedIndexPath, animated: false, scrollPosition: [])
-                currentlySelectedIndex = previouslySelectedIndexPath.row
-                changeAsset(mediaManager.getAsset(at: previouslySelectedIndexPath.row))
+            v.collectionView.deselectItem(at: indexPath, animated: false)
+
+            // Replace the current selected image with the previously selected one if is in this library
+            if let previouslySelectedIndexPath = selectedIndexPaths.last,
+               let previouslySelected = selectedItems.first(where: {$0.index == previouslySelectedIndexPath.row}),
+               let previouslySelectedAsset = mediaManager.getAsset(at: previouslySelectedIndexPath.row),
+               previouslySelectedAsset.localIdentifier == previouslySelected.assetIdentifier {
+                    v.collectionView.selectItem(at: previouslySelectedIndexPath, animated: false, scrollPosition: [])
+                    currentlySelectedIndex = previouslySelectedIndexPath.row
+                    changeAsset(previouslySelectedAsset)
+            } else {
+                v.assetZoomableView.clearAsset()
+                changeAsset(nil)
             }
 			
             checkLimit()

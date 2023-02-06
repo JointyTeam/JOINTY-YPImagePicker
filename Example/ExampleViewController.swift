@@ -188,7 +188,8 @@ class ExampleViewController: UIViewController {
         //config.library.options = options
 
         config.library.preselectedItems = selectedItems
-
+        config.library.preSelectItemOnMultipleSelection = false
+        config.library.defaultMultipleSelection = true
 
 		// Customise fonts
 		//config.fonts.menuItemFont = UIFont.systemFont(ofSize: 22.0, weight: .semibold)

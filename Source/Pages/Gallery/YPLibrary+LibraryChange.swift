@@ -54,11 +54,12 @@ extension YPLibraryVC: PHPhotoLibraryChangeObserver {
     }
 
     fileprivate func updateAssetSelection() {
+
         // If no items selected in assetView, but there are already photos
         // after photoLibraryDidChange, than select first item in library.
         // It can be when user add photos from limited permission.
         if self.mediaManager.hasResultItems,
-           selectedItems.isEmpty,
+           !selectedItems.isEmpty,
            let newAsset = self.mediaManager.getAsset(at: 0) {
             self.changeAsset(newAsset)
         }
