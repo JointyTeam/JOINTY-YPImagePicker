@@ -169,17 +169,6 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         mode = modeFor(vc: vc)
         
         retriggerPermissionCheck(for: vc)
-        
-//        // Re-trigger permission check
-//        if let vc = vc as? YPLibraryVC {
-//            vc.doAfterLibraryPermissionCheck { [weak vc] in
-//                vc?.initialize()
-//            }
-//        } else if let cameraVC = vc as? YPCameraVC {
-//            cameraVC.start()
-//        } else if let videoVC = vc as? YPVideoCaptureVC {
-//            videoVC.start()
-//        }
 
         updateUI()
     }
@@ -188,7 +177,13 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         
         // Re-trigger permission check
         if let vc = vc as? YPLibraryVC {
-            vc.doAfterLibraryPermissionCheck { [weak vc] in
+            vc.resetPermissionNotGrantedState()
+            vc.doAfterLibraryPermissionCheck { [weak vc] hasPermission in
+                guard hasPermission else {
+                    vc?.permissionNotGranted()
+                    return
+                    
+                }
                 vc?.initialize()
             }
         } else if let cameraVC = vc as? YPCameraVC {

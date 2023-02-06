@@ -64,7 +64,12 @@ internal final class YPCameraVC: UIViewController, UIGestureRecognizerDelegate, 
     }
     
     func start() {
-        doAfterCameraPermissionCheck { [weak self] in
+        permissionLabel.isHidden = true
+        doAfterCameraPermissionCheck { [weak self] hasPermission in
+            guard hasPermission else {
+                self?.permissionLabel.isHidden = false
+                return
+            }
             guard let previewContainer = self?.v.previewViewContainer else {
                 return
             }
@@ -77,6 +82,29 @@ internal final class YPCameraVC: UIViewController, UIGestureRecognizerDelegate, 
             })
         }
     }
+    
+    lazy var permissionLabel: UILabel = {
+        
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = YPImagePickerConfiguration.shared.fonts.libaryWarningFont
+        label.textColor = .ypLabel
+        label.numberOfLines = 0
+        label.text = YPConfig.wordings.permissionPopup.title + "\n\n" + YPConfig.wordings.permissionPopup.message
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: self.v.previewViewContainer.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: self.v.previewViewContainer.centerYAnchor),
+            label.leadingAnchor.constraint(greaterThanOrEqualTo: self.v.previewViewContainer.leadingAnchor, constant: 16),
+            label.trailingAnchor.constraint(lessThanOrEqualTo: self.v.previewViewContainer.trailingAnchor, constant: -16),
+            label.topAnchor.constraint(greaterThanOrEqualTo: self.v.previewViewContainer.topAnchor, constant: 16),
+            label.bottomAnchor.constraint(lessThanOrEqualTo: self.v.previewViewContainer.bottomAnchor, constant: -16),
+        ])
+        
+        return label
+    }()
 
     @objc
     func focusTapped(_ recognizer: UITapGestureRecognizer) {
@@ -129,7 +157,8 @@ internal final class YPCameraVC: UIViewController, UIGestureRecognizerDelegate, 
     
     @objc
     func shotButtonTapped() {
-        doAfterCameraPermissionCheck { [weak self] in
+        doAfterCameraPermissionCheck { [weak self] hasPermission in
+            guard hasPermission else { return }
             self?.shoot()
         }
     }

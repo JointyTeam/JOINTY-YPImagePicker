@@ -61,22 +61,6 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         if let preselectedItems = YPConfig.library.preselectedItems,
            !preselectedItems.isEmpty {
             selectedItems = getPreselectedItems()
-            /*
-            selectedItems = preselectedItems.compactMap { item -> YPLibrarySelection? in
-                var itemAsset: PHAsset?
-                switch item {
-                case .photo(let photo):
-                    itemAsset = photo.asset
-                case .video(let video):
-                    itemAsset = video.asset
-                }
-                guard let asset = itemAsset else {
-                    return nil
-                }
-                
-                // The negative index will be corrected in the collectionView:cellForItemAt:
-                return YPLibrarySelection(index: -1, assetIdentifier: asset.localIdentifier)
-            }*/
             v.assetViewContainer.setMultipleSelectionMode(on: isMultipleSelectionEnabled)
             v.collectionView.reloadData()
         }
@@ -88,6 +72,17 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         if YPConfig.library.defaultMultipleSelection || selectedItems.count > 1 {
             toggleMultipleSelection()
         }
+    }
+    
+    func resetPermissionNotGrantedState() {
+        permissionLabel.isHidden = true
+        v.fadeInLoader()
+    }
+    
+    func permissionNotGranted() {
+        permissionLabel.isHidden = false
+        v.hideLoader()
+        v.assetViewContainer.curtain.alpha = 1
     }
 
     func setAlbum(_ album: YPAlbum) {
@@ -174,7 +169,8 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
     
     @objc
     func squareCropButtonTapped() {
-        doAfterLibraryPermissionCheck { [weak self] in
+        doAfterLibraryPermissionCheck { [weak self] hasPermission in
+            guard hasPermission else { return }
             self?.v.assetViewContainer.squareCropButtonTapped()
         }
     }
@@ -192,7 +188,8 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
             return
         }
 
-        doAfterLibraryPermissionCheck { [weak self] in
+        doAfterLibraryPermissionCheck { [weak self] hasPermission in
+            guard hasPermission else { return }
             if self?.isMultipleSelectionEnabled == false {
                 self?.selectedItems.removeAll()
             }
@@ -329,6 +326,29 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
             mediaManager.updateCachedAssets(in: self.v.collectionView)
         }
     }
+    
+    lazy var permissionLabel: UILabel = {
+        
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = YPImagePickerConfiguration.shared.fonts.libaryWarningFont
+        label.textColor = .ypLabel
+        label.numberOfLines = 0
+        label.text = YPConfig.wordings.permissionPopup.title + "\n\n" + YPConfig.wordings.permissionPopup.message
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        self.view.insertSubview(label, aboveSubview: self.v)
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: self.v.assetZoomableView.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: self.v.assetZoomableView.centerYAnchor),
+            label.leadingAnchor.constraint(greaterThanOrEqualTo: self.v.assetZoomableView.leadingAnchor, constant: 16),
+            label.trailingAnchor.constraint(lessThanOrEqualTo: self.v.assetZoomableView.trailingAnchor, constant: -16),
+            label.topAnchor.constraint(greaterThanOrEqualTo: self.v.assetZoomableView.topAnchor, constant: 16),
+            label.bottomAnchor.constraint(lessThanOrEqualTo: self.v.assetZoomableView.bottomAnchor, constant: -16),
+        ])
+        
+        return label
+    }()
     
     lazy var infoLabel: UILabel = {
         
