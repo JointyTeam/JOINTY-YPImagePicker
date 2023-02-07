@@ -88,9 +88,9 @@ internal final class YPCameraVC: UIViewController, UIGestureRecognizerDelegate, 
         let label = UILabel()
         label.textAlignment = .center
         label.font = YPImagePickerConfiguration.shared.fonts.libaryWarningFont
-        label.textColor = .ypLabel
+        label.textColor = .white
         label.numberOfLines = 0
-        label.text = YPConfig.wordings.permissionPopup.title + "\n\n" + YPConfig.wordings.permissionPopup.message
+        label.text = YPConfig.wordings.permissionPopup.message
         label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(label)

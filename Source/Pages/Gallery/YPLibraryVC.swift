@@ -332,9 +332,9 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         let label = UILabel()
         label.textAlignment = .center
         label.font = YPImagePickerConfiguration.shared.fonts.libaryWarningFont
-        label.textColor = .ypLabel
+        label.textColor = .white
         label.numberOfLines = 0
-        label.text = YPConfig.wordings.permissionPopup.title + "\n\n" + YPConfig.wordings.permissionPopup.message
+        label.text = YPConfig.wordings.permissionPopup.message
         label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
         self.view.insertSubview(label, aboveSubview: self.v)
