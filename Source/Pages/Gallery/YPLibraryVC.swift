@@ -75,12 +75,12 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
     }
     
     func resetPermissionNotGrantedState() {
-        permissionLabel.isHidden = true
+        permissionView.isHidden = true
         v.fadeInLoader()
     }
     
     func permissionNotGranted() {
-        permissionLabel.isHidden = false
+        permissionView.isHidden = false
         v.hideLoader()
         v.assetViewContainer.curtain.alpha = 1
     }
@@ -327,7 +327,22 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         }
     }
     
-    lazy var permissionLabel: UILabel = {
+    lazy var permissionView: UIView = {
+        
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        
+        self.view.insertSubview(view, aboveSubview: self.v)
+        NSLayoutConstraint.activate([
+            view.centerXAnchor.constraint(equalTo: self.v.assetZoomableView.centerXAnchor),
+            view.centerYAnchor.constraint(equalTo: self.v.assetZoomableView.centerYAnchor),
+            view.leadingAnchor.constraint(greaterThanOrEqualTo: self.v.assetZoomableView.leadingAnchor, constant: 16),
+            view.trailingAnchor.constraint(lessThanOrEqualTo: self.v.assetZoomableView.trailingAnchor, constant: -16),
+            view.topAnchor.constraint(greaterThanOrEqualTo: self.v.assetZoomableView.topAnchor, constant: 16),
+            view.bottomAnchor.constraint(lessThanOrEqualTo: self.v.assetZoomableView.bottomAnchor, constant: -16),
+        ])
         
         let label = UILabel()
         label.textAlignment = .center
@@ -335,21 +350,43 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         label.textColor = .white
         label.numberOfLines = 0
         label.text = YPConfig.wordings.permissionPopup.message
-        label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
-        self.view.insertSubview(label, aboveSubview: self.v)
+        view.addSubview(label)
         NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: self.v.assetZoomableView.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: self.v.assetZoomableView.centerYAnchor),
-            label.leadingAnchor.constraint(greaterThanOrEqualTo: self.v.assetZoomableView.leadingAnchor, constant: 16),
-            label.trailingAnchor.constraint(lessThanOrEqualTo: self.v.assetZoomableView.trailingAnchor, constant: -16),
-            label.topAnchor.constraint(greaterThanOrEqualTo: self.v.assetZoomableView.topAnchor, constant: 16),
-            label.bottomAnchor.constraint(lessThanOrEqualTo: self.v.assetZoomableView.bottomAnchor, constant: -16),
+            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            label.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor),
+            label.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor),
+            label.topAnchor.constraint(equalTo: view.topAnchor)
         ])
         
-        return label
+        let button = UIButton(type: .custom)
+        button.text(YPConfig.wordings.permissionPopup.grantPermission)
+        button.setTitleColor(YPConfig.colors.tintColor, for: .normal)
+        button.titleLabel?.font = YPImagePickerConfiguration.shared.fonts.rightBarButtonFont
+        button.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(button)
+        NSLayoutConstraint.activate([
+            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            button.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor),
+            button.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor),
+            button.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 24),
+            button.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        button.addTarget(self, action: #selector(permissionButtonTapped), for: .touchUpInside)
+        
+        return view
     }()
     
+    @objc
+    func permissionButtonTapped() {
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+        } else {
+            UIApplication.shared.openURL(URL(string: UIApplication.openSettingsURLString)!)
+        }
+    }
+        
     lazy var infoLabel: UILabel = {
         
         let label = UILabel()
