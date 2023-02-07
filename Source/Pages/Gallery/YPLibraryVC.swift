@@ -362,7 +362,7 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         let button = UIButton(type: .custom)
         button.text(YPConfig.wordings.permissionPopup.grantPermission)
         button.setTitleColor(YPConfig.colors.tintColor, for: .normal)
-        button.titleLabel?.font = YPImagePickerConfiguration.shared.fonts.rightBarButtonFont
+        button.titleLabel?.font = YPImagePickerConfiguration.shared.fonts.leftBarButtonFont
         button.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(button)
         NSLayoutConstraint.activate([
