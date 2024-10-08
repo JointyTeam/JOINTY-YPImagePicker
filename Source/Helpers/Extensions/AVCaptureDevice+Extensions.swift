@@ -16,15 +16,28 @@ extension AVCaptureDevice {
         do {
             try lockForConfiguration()
 
-            switch torchMode {
-            case .auto:
-                torchMode = .on
-            case .on:
-                torchMode = .off
-            case .off:
-                torchMode = .auto
-            @unknown default:
-                throw YPError.custom(message: "unknown default case")
+            if isTorchModeSupported(.auto) {
+                switch torchMode {
+                case .auto:
+                    torchMode = .on
+                case .on:
+                    torchMode = .off
+                case .off:
+                    torchMode = .auto
+                @unknown default:
+                    throw YPError.custom(message: "unknown default case")
+                }
+            } else {
+                switch torchMode {
+                case .on:
+                    torchMode = .off
+                case .off:
+                    torchMode = .on
+                case .auto:
+                    torchMode = .on
+                @unknown default:
+                    throw YPError.custom(message: "unknown default case")
+                }
             }
 
             unlockForConfiguration()
